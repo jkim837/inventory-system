@@ -1,37 +1,112 @@
 import React, { useState } from 'react';
 
 function AddProduct() {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [product, setProduct] = useState({
+    name: '',
+    description: '',
+    price: '',
+    quantity: '',
+    fragile: false,
+    expiryDate: ''
+  });
 
-  const handleSubmit = async (e) => {
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setProduct(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Handle form submit
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const product = { name, price: parseFloat(price), quantity: parseInt(quantity) };
-    try {
-      const res = await fetch('http://localhost:8080/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product),
-      });
+
+    // Send POST request to backend
+    fetch('http://localhost:8080/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product),
+    })
+    .then(res => {
       if (res.ok) {
         alert('Product added!');
-        setName('');
-        setPrice('');
-        setQuantity('');
+        setProduct({
+          name: '',
+          description: '',
+          price: '',
+          quantity: '',
+          fragile: false,
+          expiryDate: ''
+        });
       } else {
-        alert('Error adding product');
+        alert('Failed to add product');
       }
-    } catch (err) {
-      alert('Network error');
-    }
+    })
+    .catch(err => {
+      alert('Error: ' + err.message);
+    });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input value={name} onChange={e => setName(e.target.value)} placeholder="Name" required />
-      <input value={price} onChange={e => setPrice(e.target.value)} placeholder="Price" required type="number" step="0.01" />
-      <input value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="Quantity" required type="number" />
+      <div>
+        <label>Name: </label>
+        <input
+          name="name"
+          value={product.name}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Description: </label>
+        <input
+          name="description"
+          value={product.description}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label>Price: </label>
+        <input
+          name="price"
+          type="number"
+          step="0.01"
+          value={product.price}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Quantity: </label>
+        <input
+          name="quantity"
+          type="number"
+          value={product.quantity}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div>
+        <label>Fragile: </label>
+        <input
+          name="fragile"
+          type="checkbox"
+          checked={product.fragile}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <label>Expiry Date: </label>
+        <input
+          name="expiryDate"
+          type="date"
+          value={product.expiryDate}
+          onChange={handleChange}
+        />
+      </div>
       <button type="submit">Add Product</button>
     </form>
   );

@@ -5,6 +5,7 @@ import com.example.inventory.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 //add any conditions requred for the product
 //such as expiry date, price, quantity, etc.
@@ -15,11 +16,14 @@ import java.time.LocalDate;
         public ProductService(ProductRepository productRepository) {
             this.productRepository = productRepository;
         }
-
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
         public Product saveProduct(Product product) {
             if(product.getName() == null || product.getName().isEmpty()) {
                 throw new IllegalArgumentException("Product name cannot be empty");
             }
+            
             if(product.getPrice() < 0) {
                 throw new IllegalArgumentException("Product price cannot be negative");
         }

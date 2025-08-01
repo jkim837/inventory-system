@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import com.example.inventory.Product;
 
 // used to manage Product entities in the database 
+// data access layer (interface to the database)
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 }
